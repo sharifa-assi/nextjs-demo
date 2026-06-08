@@ -10,10 +10,20 @@ export interface Author {
   imageUrl: string;
 }
 
+export interface Publisher {
+  id: number;
+  name: string;
+  foundedYear: number;
+  headquarters: string;
+  bio: string;
+  logoUrl: string;
+}
+
 export interface Book {
   id: number;
   title: string;
   authorId: number;
+  publisherId: number;
   publishedYear: number;
   genre: string;
   description: string;
@@ -70,11 +80,63 @@ export const authors: Author[] = [
   },
 ];
 
+export const publishers: Publisher[] = [
+  {
+    id: 1,
+    name: "Penguin Books",
+    foundedYear: 1935,
+    headquarters: "London, UK",
+    bio: "Penguin Books is a British publishing house co-founded in 1935 by Sir Allen Lane. It revolutionized publishing in the 1930s through its high-quality, inexpensive paperbacks, bringing paperback books to the mass market.",
+    logoUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=300&fit=crop",
+  },
+  {
+    id: 2,
+    name: "HarperCollins",
+    foundedYear: 1989,
+    headquarters: "New York, USA",
+    bio: "HarperCollins Publishers LLC is one of the world's largest publishing companies and is one of the 'Big Five' English-language publishing companies.",
+    logoUrl: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=300&fit=crop",
+  },
+  {
+    id: 3,
+    name: "Scribner",
+    foundedYear: 1846,
+    headquarters: "New York, USA",
+    bio: "Charles Scribner's Sons, or simply Scribner, is a famous American publisher known for publishing legendary authors including Ernest Hemingway and F. Scott Fitzgerald.",
+    logoUrl: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=300&h=300&fit=crop",
+  },
+  {
+    id: 4,
+    name: "Hogarth Press",
+    foundedYear: 1917,
+    headquarters: "London, UK",
+    bio: "The Hogarth Press is a British publishing house founded in 1917 by Leonard and Virginia Woolf, named after their home Hogarth House where they printed books by hand.",
+    logoUrl: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&h=300&fit=crop",
+  },
+  {
+    id: 5,
+    name: "Oxford University Press",
+    foundedYear: 1586,
+    headquarters: "Oxford, UK",
+    bio: "Oxford University Press is the largest university press in the world and the second oldest. It publishes academic works, dictionaries, and journals globally.",
+    logoUrl: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300&h=300&fit=crop",
+  },
+  {
+    id: 6,
+    name: "Macmillan Publishers",
+    foundedYear: 1843,
+    headquarters: "London, UK",
+    bio: "Macmillan Publishers is an international book publishing company owned by Holtzbrinck Publishing Group, and is one of the oldest and largest publishers in the world.",
+    logoUrl: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=300&fit=crop",
+  }
+];
+
 export const books: Book[] = [
   {
     id: 1,
     title: "Pride and Prejudice",
     authorId: 1,
+    publisherId: 1,
     publishedYear: 1813,
     genre: "Romance",
     description:
@@ -88,6 +150,7 @@ export const books: Book[] = [
     id: 2,
     title: "Emma",
     authorId: 1,
+    publisherId: 1,
     publishedYear: 1815,
     genre: "Romance",
     description:
@@ -101,6 +164,7 @@ export const books: Book[] = [
     id: 3,
     title: "1984",
     authorId: 2,
+    publisherId: 2,
     publishedYear: 1949,
     genre: "Dystopian Fiction",
     description:
@@ -114,6 +178,7 @@ export const books: Book[] = [
     id: 4,
     title: "Animal Farm",
     authorId: 2,
+    publisherId: 2,
     publishedYear: 1945,
     genre: "Political Satire",
     description:
@@ -127,6 +192,7 @@ export const books: Book[] = [
     id: 5,
     title: "Murder on the Orient Express",
     authorId: 3,
+    publisherId: 2,
     publishedYear: 1934,
     genre: "Mystery",
     description:
@@ -140,6 +206,7 @@ export const books: Book[] = [
     id: 6,
     title: "And Then There Were None",
     authorId: 3,
+    publisherId: 2,
     publishedYear: 1939,
     genre: "Mystery",
     description:
@@ -153,6 +220,7 @@ export const books: Book[] = [
     id: 7,
     title: "The Old Man and the Sea",
     authorId: 4,
+    publisherId: 3,
     publishedYear: 1952,
     genre: "Literary Fiction",
     description:
@@ -166,6 +234,7 @@ export const books: Book[] = [
     id: 8,
     title: "A Farewell to Arms",
     authorId: 4,
+    publisherId: 3,
     publishedYear: 1929,
     genre: "War Novel",
     description:
@@ -179,6 +248,7 @@ export const books: Book[] = [
     id: 9,
     title: "Mrs Dalloway",
     authorId: 5,
+    publisherId: 4,
     publishedYear: 1925,
     genre: "Modernist Literature",
     description:
@@ -192,6 +262,7 @@ export const books: Book[] = [
     id: 10,
     title: "To the Lighthouse",
     authorId: 5,
+    publisherId: 4,
     publishedYear: 1927,
     genre: "Modernist Literature",
     description:
@@ -203,23 +274,46 @@ export const books: Book[] = [
   },
 ];
 
-// Helper functions
-export function getAuthorById(id: number): Author | undefined {
+// Helper functions (simulating database latency with dynamic imports/async/await)
+const DELAY_MS = 600;
+const delay = () => new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+
+export async function getAuthorById(id: number): Promise<Author | undefined> {
+  await delay();
   return authors.find((author) => author.id === id);
 }
 
-export function getBookById(id: number): Book | undefined {
+export async function getBookById(id: number): Promise<Book | undefined> {
+  await delay();
   return books.find((book) => book.id === id);
 }
 
-export function getBooksByAuthorId(authorId: number): Book[] {
+export async function getBooksByAuthorId(authorId: number): Promise<Book[]> {
+  await delay();
   return books.filter((book) => book.authorId === authorId);
 }
 
-export function getAllAuthors(): Author[] {
+export async function getAllAuthors(): Promise<Author[]> {
+  await delay();
   return authors;
 }
 
-export function getAllBooks(): Book[] {
+export async function getAllBooks(): Promise<Book[]> {
+  await delay();
   return books;
+}
+
+export async function getAllPublishers(): Promise<Publisher[]> {
+  await delay();
+  return publishers;
+}
+
+export async function getPublisherById(id: number): Promise<Publisher | undefined> {
+  await delay();
+  return publishers.find((pub) => pub.id === id);
+}
+
+export async function getBooksByPublisherId(publisherId: number): Promise<Book[]> {
+  await delay();
+  return books.filter((book) => book.publisherId === publisherId);
 }

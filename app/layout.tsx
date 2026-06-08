@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 
@@ -18,17 +19,20 @@ export const metadata: Metadata = {
   description: "A Next.js demo app for learning with books and authors",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const isLoggedIn = cookieStore.get("isLoggedIn")?.value === "true";
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navigation />
+        <Navigation isLoggedIn={isLoggedIn} />
         <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
           {children}
         </main>

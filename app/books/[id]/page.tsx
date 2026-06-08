@@ -10,14 +10,14 @@ export default async function BookPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const book = getBookById(parseInt(id));
+  const book = await getBookById(parseInt(id));
   
   if (!book) {
     notFound();
   }
   
-  const author = getAuthorById(book.authorId);
-  const otherBooksByAuthor = getBooksByAuthorId(book.authorId).filter(
+  const author = await getAuthorById(book.authorId);
+  const otherBooksByAuthor = (await getBooksByAuthorId(book.authorId)).filter(
     b => b.id !== book.id
   );
 

@@ -1,19 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
+  initialValue?: string;
 }
 
-export default function SearchBar({ onSearch, placeholder = "Search..." }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+export default function SearchBar({ onSearch, placeholder = "Search...", initialValue = "" }: SearchBarProps) {
+  const [query, setQuery] = useState(initialValue);
+  const isUserInput = useRef(false);
 
   useEffect(() => {
-    // Debounce the search to avoid too many updates
+    setQuery(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    // Only fire the search callback when the user has actually typed something
+    if (!isUserInput.current) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       onSearch(query);
+      isUserInput.current = false;
     }, 300);
 
     return () => clearTimeout(timer);
@@ -25,7 +36,10 @@ export default function SearchBar({ onSearch, placeholder = "Search..." }: Searc
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            isUserInput.current = true;
+            setQuery(e.target.value);
+          }}
           placeholder={placeholder}
           className="w-full px-4 py-3 pl-12 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
         />
@@ -44,7 +58,10 @@ export default function SearchBar({ onSearch, placeholder = "Search..." }: Searc
         </svg>
         {query && (
           <button
-            onClick={() => setQuery('')}
+            onClick={() => {
+              isUserInput.current = true;
+              setQuery('');
+            }}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
